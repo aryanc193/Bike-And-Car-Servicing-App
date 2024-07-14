@@ -13,8 +13,8 @@ Make sure you have the following installed on your machine:
 **Cloning the Repository**
 
 ```bash
-git clone https://github.com/6DaddyCoders9/Restaurant-App.git
-cd Restaurant-App
+git clone https://github.com/6DaddyCoders9/Bike-And-Car-Servicing-App.git
+cd Bike-And-Car-Servicing-App
 ```
 
 **Installation**
