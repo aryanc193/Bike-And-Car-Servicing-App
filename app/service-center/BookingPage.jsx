@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Alert, Platform, ScrollView } from "react-native";
+import { View, Text, Alert, Platform, ScrollView ,ActivityIndicator } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { getServiceCenterById, bookAppointment } from "../../lib/appwrite";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -114,7 +114,12 @@ const BookingPage = () => {
     }
   };
 
-  if (loading) return <Text>Loading...</Text>;
+  if (loading)
+    return (
+      <View className="flex-1 justify-center items-center bg-primary">
+        <ActivityIndicator size="large" color="#ffffff" />
+      </View>
+    );
 
   if (!serviceCenter) return <Text>Service Center not found</Text>;
 
@@ -156,7 +161,7 @@ const BookingPage = () => {
         <Text className="text-xl font-regular text-white">
           Selected Date and Time:{" "}
         </Text>
-        <Text className="text-white font-bold text-4xl mt-4">
+        <Text className="text-secondary font-bold text-3xl mt-4">
           {selectedDate.toLocaleString()}
         </Text>
       </ScrollView>

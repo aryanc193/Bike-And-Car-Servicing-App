@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, Button, ScrollView } from "react-native";
+import { View, Text, Image, ScrollView, ActivityIndicator } from "react-native";
 import { router, useLocalSearchParams } from "expo-router"; // Use this to get route params
 import useAppwrite from "../../lib/useAppwrite";
 import { getServiceCenterById } from "../../lib/appwrite";
@@ -26,9 +26,19 @@ const ServiceCenterDetail = () => {
     fetchServiceCenter();
   }, [id]);
 
-  if (loading) return <Text>Loading...</Text>; // Show a loading message or spinner
+  if (loading)
+    return (
+      <View className="flex-1 justify-center items-center bg-primary">
+        <ActivityIndicator size="large" color="#ffffff" />
+      </View>
+    ); // Show a loading message or spinner
 
-  if (!serviceCenter) return <Text>Service Center not found</Text>; // Handle no data case
+  if (!serviceCenter)
+    return (
+      <View className="flex-1 justify-center items-center bg-primary">
+        <Text className="text-white">Service Center not found</Text>
+      </View>
+    ); // Handle no data case
 
   return (
     <View className="flex-1 bg-primary">
@@ -84,9 +94,9 @@ const ServiceCenterDetail = () => {
             <Text className="text-white text-xl font-pregular mb-1">
               Operating Hours:
             </Text>
-            {serviceCenter.operating_hours.map((hour, index) => (
+            {Object.entries(serviceCenter.operating_hours).map(([day, hours], index) => (
               <Text key={index} className="text-white text-xl font-bold mt-1">
-                {hour}
+                {day}: {hours}
               </Text>
             ))}
           </View>
