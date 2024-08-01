@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Alert, Platform, ScrollView ,ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  Alert,
+  Platform,
+  ScrollView,
+  ActivityIndicator,
+  Image,
+} from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { getServiceCenterById, bookAppointment } from "../../lib/appwrite";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import CustomButton from "../../components/CustomButton";
 import { useGlobalContext } from "../../context/GlobalProvider";
+import { CheckBox } from "react-native-elements"; // or any checkbox library you prefer
 
 const BookingPage = () => {
   const { user } = useGlobalContext();
@@ -15,6 +24,7 @@ const BookingPage = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedServices, setSelectedServices] = useState([]);
 
   useEffect(() => {
     const fetchServiceCenter = async () => {
@@ -32,6 +42,17 @@ const BookingPage = () => {
       fetchServiceCenter();
     }
   }, [id]);
+
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
 
   const handleDateChange = (event, date) => {
     if (event.type === "set") {
@@ -83,21 +104,15 @@ const BookingPage = () => {
     }
   };
 
-  //   const openTimePicker = () => {
-  //     if (Platform.OS === "ios") {
-  //       setShowTimePicker(true);
-  //     } else if (Platform.OS === "android") {
-  //       import("@react-native-community/datetimepicker").then(
-  //         ({ DateTimePickerAndroid }) => {
-  //           DateTimePickerAndroid.open({
-  //             mode: "time",
-  //             value: selectedDate,
-  //             onChange: (event, time) => handleTimeChange(event, time),
-  //           });
-  //         }
-  //       );
-  //     }
-  //   };
+  const handleServiceToggle = (service) => {
+    setSelectedServices((prevSelectedServices) => {
+      if (prevSelectedServices.includes(service)) {
+        return prevSelectedServices.filter((s) => s !== service);
+      } else {
+        return [...prevSelectedServices, service];
+      }
+    });
+  };
 
   const handleBookAppointment = async () => {
     try {
@@ -105,7 +120,16 @@ const BookingPage = () => {
         Alert.alert("Error", "Service center information is not available.");
         return;
       }
-      await bookAppointment(user.$id, serviceCenter.$id, selectedDate);
+      if (selectedServices.length === 0) {
+        Alert.alert("Error", "Please select at least one service.");
+        return;
+      }
+      await bookAppointment(
+        user.$id,
+        serviceCenter.$id,
+        selectedDate,
+        selectedServices
+      );
       Alert.alert("Success", "Appointment booked successfully!");
       router.push("../(tabs)/home");
     } catch (error) {
@@ -116,7 +140,7 @@ const BookingPage = () => {
 
   if (loading)
     return (
-      <View className="flex-1 justify-center items-center bg-primary">
+      <View className="flex-1 justify-center items-center bg-white">
         <ActivityIndicator size="large" color="#ffffff" />
       </View>
     );
@@ -124,12 +148,18 @@ const BookingPage = () => {
   if (!serviceCenter) return <Text>Service Center not found</Text>;
 
   return (
-    <View className="flex-1 mt-10 bg-primary">
+    <View className="flex-1 mt-10 bg-white">
       <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 20 }}>
-        <Text className="text-4xl font-bold mb-4 text-white">
+        <View className="items-center justify-center">
+          <Image
+            source={{ uri: serviceCenter.thumbnail }}
+            className="w-[90%] h-48 rounded-lg -top-5"
+          />
+        </View>
+        <Text className="text-4xl font-bold mb-4 text-black uppercase text-center">
           {serviceCenter.title}
         </Text>
-        <Text className="text-lg text-white mb-4">
+        <Text className="text-lg text-black mb-4">
           Book a time slot at your convenience{"\n"}and confirm!
         </Text>
         <CustomButton
@@ -137,11 +167,6 @@ const BookingPage = () => {
           handlePress={openDatePicker}
           containerStyles="w-full h-12 bg-secondary mb-5"
         />
-        {/* <CustomButton
-          title="Select Time"
-          handlePress={openTimePicker}
-          containerStyles="w-full h-12 bg-secondary mb-10"
-        /> */}
         {showDatePicker && (
           <DateTimePicker
             value={selectedDate}
@@ -158,12 +183,23 @@ const BookingPage = () => {
             onChange={(event, time) => handleTimeChange(event, time)}
           />
         )}
-        <Text className="text-xl font-regular text-white">
+        <Text className="text-xl font-regular text-black">
           Selected Date and Time:{" "}
         </Text>
         <Text className="text-secondary font-bold text-3xl mt-4">
-          {selectedDate.toLocaleString()}
+          {formatDateTime(selectedDate)}
         </Text>
+        <View className="mt-10">
+          <Text className="text-xl">Select a service:</Text>
+          {serviceCenter.services.map((service, index) => (
+            <CheckBox
+              key={index}
+              title={service}
+              checked={selectedServices.includes(service)}
+              onPress={() => handleServiceToggle(service)}
+            />
+          ))}
+        </View>
       </ScrollView>
       <CustomButton
         title="Book Appointment"

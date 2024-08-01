@@ -39,6 +39,7 @@ const RootLayout = () => {
           name="service-center/BookingPage"
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="search/[query]" options={{ headerShown: false }} />
       </Stack>
     </GlobalProvider>
   );
