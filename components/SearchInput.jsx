@@ -15,11 +15,11 @@ const SearchInput = ({ initialQuery }) => {
   const [query, setQuery] = useState(initialQuery || "");
 
   return (
-    <View className="w-full h-16 px-4 bg-black-100 border-2 border-black-200 rounded-2xl focus:border-secondary items-center flex-row space-x-4">
+    <View className="w-full h-16 px-4 bg-white border-2 border-black-200 rounded-2xl focus:border-secondary items-center flex-row space-x-4 mb-8">
       <TextInput
-        className="flex-1 text-white font-pregular text-base"
+        className="flex-1 text-black font-pregular text-base"
         value={query}
-        placeholder="Search for a video topic"
+        placeholder="Search for a service center"
         placeholderTextColor="#cdcde0"
         onChangeText={(e) => setQuery(e)}
       />

@@ -13,7 +13,7 @@ export default function App() {
   if (!isLoading && isLogged) return <Redirect href="/home" />;
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="bg-white h-full">
       <ScrollView contentContainerStyle={{ height: "100%" }}>
         <View className="w-full flex justify-center items-center h-full px-4">
           <Image
@@ -23,12 +23,12 @@ export default function App() {
           />
 
           <View className="relative mt-5">
-            <Text className="text-3xl text-white font-bold text-center">
+            <Text className="text-3xl text-black font-bold text-center">
               Discover your nearest service centers for{" "}
               <Text className="text-secondary-200">Bike and Car Servicing</Text>
             </Text>
           </View>
-          <Text className="text-sm font-pregular text-gray-100 mt-7 text-center">
+          <Text className="text-sm font-pregular text-gray-700 mt-7 text-center">
             Locate, know more and compare your nearest service centers
           </Text>
 

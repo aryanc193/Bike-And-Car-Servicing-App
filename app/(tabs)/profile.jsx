@@ -1,19 +1,35 @@
 import { useState, useEffect } from "react";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Image, FlatList, TouchableOpacity, Text, Button, RefreshControl, Alert, ActivityIndicator } from "react-native";
+import {
+  View,
+  Image,
+  FlatList,
+  TouchableOpacity,
+  Text,
+  Button,
+  RefreshControl,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { icons } from "../../constants";
 import useAppwrite from "../../lib/useAppwrite";
-import { getUserVisitedServiceCenters, signOut, cancelAppointment } from "../../lib/appwrite";
+import {
+  getUserVisitedServiceCenters,
+  signOut,
+  cancelAppointment,
+} from "../../lib/appwrite";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import EmptyState from "../../components/EmptyState";
 import InfoBox from "../../components/InfoBox";
 
 const Profile = () => {
   const { user, setUser, setIsLogged } = useGlobalContext();
-  const { data: visitedServiceCenters, loading, refetch } = useAppwrite(() =>
-    getUserVisitedServiceCenters(user.$id)
-  );
+  const {
+    data: visitedServiceCenters,
+    loading,
+    refetch,
+  } = useAppwrite(() => getUserVisitedServiceCenters(user.$id));
   const [refreshing, setRefreshing] = useState(false);
 
   const handlePress = (id) => {
@@ -34,7 +50,10 @@ const Profile = () => {
   const handleCancel = async (appointmentId) => {
     try {
       await cancelAppointment(appointmentId);
-      Alert.alert("Appointment Cancelled", "Your appointment has been cancelled successfully.");
+      Alert.alert(
+        "Appointment Cancelled",
+        "Your appointment has been cancelled successfully."
+      );
       refetch(); // Refresh the data after cancelling the appointment
     } catch (error) {
       console.error("Failed to cancel appointment:", error);
@@ -57,13 +76,13 @@ const Profile = () => {
 
   if (loading)
     return (
-      <View className="flex-1 justify-center items-center bg-primary">
+      <View className="flex-1 justify-center items-center bg-white">
         <ActivityIndicator size="large" color="#ffffff" />
       </View>
     );
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="bg-white h-full">
       <FlatList
         data={visitedServiceCenters}
         keyExtractor={(item) => item.$id}
@@ -72,23 +91,31 @@ const Profile = () => {
             className="px-4 mb-4"
             onPress={() => handlePress(item.$id)}
           >
-            <View className="bg-gray-800 p-4 rounded-lg shadow-md">
-              <Text className="text-lg font-semibold text-secondary">{item.title}</Text>
-              <Text className="text-gray-200 mt-2 text-lg">
-                Phone: {item.phone}
+            <View className="bg-gray-50 p-4 rounded-lg shadow-2xl shadow-secondary-200 border-gray-300 border">
+              <Text className="text-lg font-semibold text-secondary">
+                {item.title}
               </Text>
-              <Text className="text-gray-200 mt-2 text-lg">
-                E-mail: {item.email}
-              </Text>
-              <Text className="text-gray-200 mt-2 text-lg">
+              <Text className="text-gray-800 mt-2 text-lg">
                 Status: {item.appointmentStatus}
               </Text>
-              <Text className="text-gray-200 mt-2 text-lg pb-5">
+              <Text className="text-gray-800 mt-2 text-lg pb-5">
                 Date: {formatDateTime(item.appointmentDate)}
               </Text>
+              <View className="-mt-3">
+                <Text className="text-black text-xl font-semibold mb-1">
+                  Services booked:
+                </Text>
+                {item.appointmentServices.map((service, index) => (
+                  <Text key={index} className="text-black text-lg mt-1 mb-1">
+                    {index + 1}
+                    {") "}
+                    {service}
+                  </Text>
+                ))}
+              </View>
 
               <TouchableOpacity
-                className = "bg-secondary-200 rounded-xl min-h-[62px] justify-center items-center "
+                className="bg-secondary-200 rounded-xl min-h-[62px] justify-center items-center "
                 onPress={() => handleCancel(item.appointmentId)}
               >
                 <Text className="text-primary font-psemibold text-lg">
